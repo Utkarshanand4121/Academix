@@ -2,13 +2,15 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "It is a E-Learning Project",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
   },
   "author": "Utkarsh Anand",
   "license": "ISC",
   "dependencies": {
+    "backend": "file:",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
