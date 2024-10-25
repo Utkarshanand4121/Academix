@@ -15,4 +15,11 @@ app.use(express.urlencoded({ extended: true, limits: "15kb" }));
 
 app.use(express.static("public"));
 
+// routes import 
+import studentRoute from "./routes/student.routes.js";
+app.use("/api/v1/users", studentRoute);
+
+import teacherRoute from "./routes/teacher.routes.js";
+app.use("/api/v1/teacher", teacherRoute);
+
 export { app };
