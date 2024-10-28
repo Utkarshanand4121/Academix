@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const teacherSchema = new mongoose.Schema(
   {
@@ -63,6 +65,54 @@ const teacherSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+teacherSchema.pre("save", async function (next) {
+  if (!this.isModified("username") || this.isNew) return next();
+  this.username = this.username
+    .split(" ")
+    .map((part) => part.charAt(0).toUpperCase() + part.split(1).toLowerCase())
+    .join(" ");
+  next();
+});
+
+teacherSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+teacherSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+teacherSchema.methods.generateAccessToekn = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      username: this.username,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
+
+teacherSchema.methods.generateRefreshToekn = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      username: this.username,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    }
+  );
+};
 
 const teacher = mongoose.model("Teacher", teacherSchema);
 

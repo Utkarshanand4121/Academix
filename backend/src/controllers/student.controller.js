@@ -3,7 +3,6 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import { ApiError } from "../utils/ApiError.js";
 import { student } from "../models/student.models.js";
 import { teacher } from "../models/teacher.models.js";
-import bcrypt from 'bcryptjs';
 
 const signupController = asyncHandler(async (req, res) => {
     const {username, password, email}  = req.body;
@@ -23,10 +22,7 @@ const signupController = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User is the teacher");
     }
 
-    // Password Hashing
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    req.body.password = hashedPassword;
+
     const newStudent = await student.create({
         email,
         username,

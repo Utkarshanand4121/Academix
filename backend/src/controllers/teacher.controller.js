@@ -21,6 +21,7 @@ const signupController = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User is a Student");
   }
 
+
   const newTeacher = await teacher.create({
     email,
     username,

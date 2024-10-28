@@ -17,7 +17,7 @@ app.use(express.static("public"));
 
 // routes import 
 import studentRoute from "./routes/student.routes.js";
-app.use("/api/v1/users", studentRoute);
+app.use("/api/v1/student", studentRoute);
 
 import teacherRoute from "./routes/teacher.routes.js";
 app.use("/api/v1/teacher", teacherRoute);
