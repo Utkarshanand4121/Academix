@@ -114,6 +114,6 @@ teacherSchema.methods.generateRefreshToekn = function () {
   );
 };
 
-const teacher = mongoose.model("Teacher", teacherSchema);
+const Teacher = mongoose.model("Teacher", teacherSchema);
 
-export { teacher };
+export { Teacher };

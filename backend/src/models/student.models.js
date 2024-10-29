@@ -102,6 +102,6 @@ studentSchema.methods.generateRefreshToken = function () {
   )
 }
 
-const student = mongoose.model("Student", studentSchema);
+const Student = mongoose.model("Student", studentSchema);
 
-export { student };
+export { Student };
