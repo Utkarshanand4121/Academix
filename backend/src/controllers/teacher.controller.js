@@ -85,7 +85,7 @@ const loginController = asyncHandler(async (req, res) => {
 
   const isValidPassword = await teacher.isPasswordCorrect(password);
   if (!isValidPassword) {
-    throw new ApiError(400, "Invalid user credential");
+    throw new ApiError(400, "Invalid user credentials");
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
