@@ -70,12 +70,13 @@ const loginController = asyncHandler(async (req, res) => {
   // ------------------------
   const { username, email, password } = req.body;
 
-  if (!(username || email)) { // anything required either username or email
+  if (!(username || email)) {
+    // anything required either username or email
     throw new ApiError(400, "All fields are required");
   }
 
   const student = await Student.findOne({
-    $or: [{ username }, { email }],  // find by email or username
+    $or: [{ username }, { email }], // find by email or username
   });
 
   if (!student) {
@@ -83,7 +84,7 @@ const loginController = asyncHandler(async (req, res) => {
   }
 
   // Password verification
-  const isPasswordValid = await student.isPasswordCorrect(password); 
+  const isPasswordValid = await student.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
     throw new ApiError(400, "Invalid student credentials");
@@ -121,4 +122,28 @@ const loginController = asyncHandler(async (req, res) => {
     );
 });
 
-export { signupController, loginController };
+const logoutController = asyncHandler(async (req, res) => {
+  await Student.findByIdAndUpdate(
+    req.student._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "Student logout"));
+});
+
+export { signupController, loginController, logoutController };
