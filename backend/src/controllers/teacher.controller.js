@@ -141,4 +141,15 @@ const logoutController = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Teacher Logout"));
 });
 
-export { signupController, loginController, logoutController };
+const getTeacher = asyncHandler(async (req, res) => {
+  const user = req.teacher;
+  const id = req.params.id;
+
+  if (user._id != id) {
+    throw new ApiError(400, "Unauthorized user");
+  }
+
+  return res.status(200).json(new ApiResponse(200, user, "Teacher logged in"));
+});
+
+export { signupController, loginController, logoutController, getTeacher };

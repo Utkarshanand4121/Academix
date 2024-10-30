@@ -102,6 +102,54 @@ studentSchema.methods.generateRefreshToken = function () {
   )
 }
 
-const Student = mongoose.model("Student", studentSchema);
+const studentDetailsSchema = new mongoose.Schema(
+  {
+    Phone: {
+      type: Number,
+      required: true,
+      trim: true,
+      unique: true
+    },
+    Address: {
+      type: String,
+      required: true,
+    }, 
+    HighestEducation: {
+      type: String,
+      required: true,
+    },
+    SecondarySchool: {
+      type: String,
+      required: true,
+    },
+    HigherSchool: {
+      type: String,
+      required: true,
+    },
+    SecondaryMarks: {
+      type: Number,
+      required: true,
+    },
+    HigherMarks: {
+      type: Number,
+      required: true,
+    },
+    Aadhaar: {
+      type: String,
+      required: true,
+    },
+    Secondary: {
+      type: String,
+      required: true,
+    },
+    Higher: {
+      type: String,
+      required: true,
+    }
+  },{ timestamps: true }
+)
 
-export { Student };
+const Student = mongoose.model("Student", studentSchema);
+const studentdocs = mongoose.model("studentdocs", studentDetailsSchema);
+
+export { Student, studentdocs };

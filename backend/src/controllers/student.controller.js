@@ -1,8 +1,9 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
-import { Student } from "../models/student.models.js";
+import { Student, studentdocs } from "../models/student.models.js";
 import { Teacher } from "../models/teacher.models.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const generateAccessAndRefreshToken = async (studentId) => {
   try {
@@ -146,4 +147,115 @@ const logoutController = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Student logout"));
 });
 
-export { signupController, loginController, logoutController };
+const getStudent = asyncHandler(async (req, res) => {
+  const user = req.student;
+  const id = req.params.id;
+
+  if (user._id != id) {
+    throw new ApiError(400, "Unauthorized user");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Student is logged in"));
+});
+
+const addStudentDeatils = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  if (req.student._id != id) {
+    throw new ApiError(400, "Student not register");
+  }
+
+  const {
+    Phone,
+    Address,
+    HighestEducation,
+    SecondarySchool,
+    HigherSchool,
+    SecondaryMarks,
+    HigherMarks,
+  } = req.body;
+
+  if (
+    [
+      Phone,
+      Address,
+      HighestEducation,
+      SecondarySchool,
+      HigherSchool,
+      SecondaryMarks,
+      HigherMarks,
+    ].some((fields) => fields?.trim() === "")
+  ) {
+    throw new ApiError(400, "All Fields are required");
+  }
+
+  const existing = await studentdocs.findOne({ Phone });
+  if (existing) {
+    throw new ApiError(400, "phone number all ready exists");
+  }
+
+  const aadhaarLocalPath = req.files?.Aadhaar?.[0]?.path;
+  const secondaryLocalPath = req.files?.Secondary?.[0]?.path;
+  const higherLocalPath = req.files?.Higher?.[0]?.path;
+
+  if (!aadhaarLocalPath) {
+    throw new ApiError(400, "Aadhaar is required");
+  }
+  if (!secondaryLocalPath) {
+    throw new ApiError(400, "Secondary marks sheet is required");
+  }
+  if (!higherLocalPath) {
+    throw new ApiError(400, "Higher marks sheet is required");
+  }
+
+  const Aadhaar = await uploadOnCloudinary(aadhaarLocalPath);
+  const Secondary = await uploadOnCloudinary(secondaryLocalPath);
+  const Higher = await uploadOnCloudinary(higherLocalPath);
+
+  const studentDetails = await studentdocs.create({
+    Phone,
+    Address,
+    HighestEducation,
+    SecondarySchool,
+    HigherSchool,
+    SecondaryMarks,
+    HigherMarks,
+    Aadhaar: Aadhaar.url,
+    Secondary: Secondary.url,
+    Higher: Higher.url,
+  });
+
+  const addStudentInfo = await Student.findOneAndUpdate(
+    {
+      _id: id,
+    },
+    {
+      $set: {
+        isApproved: "pending",
+        studentDetails: studentDetails._id,
+      },
+    },
+    {
+      new: true,
+    }
+  ).select("-password -refreshToken");
+
+  if (!addStudentInfo) {
+    throw new ApiError(400, "failed to approve or reject || Student not found");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, addStudentInfo, "Document Uploaded Successfully")
+    );
+});
+
+export {
+  signupController,
+  loginController,
+  logoutController,
+  getStudent,
+  addStudentDeatils,
+};

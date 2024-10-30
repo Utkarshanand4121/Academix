@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginController, logoutController, signupController } from "../controllers/teacher.controller.js";
+import { getTeacher, loginController, logoutController, signupController } from "../controllers/teacher.controller.js";
 import { verifyJWTTeacher } from './../middlewares/teacher.middlewares';
 
 const router = Router();
@@ -10,5 +10,6 @@ router.route("/login").post(loginController);
 
 // secured routes
 router.route("/logout").post(verifyJWTTeacher, logoutController);
+router.route("/teacher/:id").get(verifyJWTTeacher, getTeacher);
 
 export default router;
