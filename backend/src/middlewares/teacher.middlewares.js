@@ -1,6 +1,6 @@
-import { Teacher } from "../models/teacher.models";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
+import { Teacher } from "../models/teacher.models.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from 'jsonwebtoken';
 
 export const verifyJWTTeacher = asyncHandler(async (req, _, next) => {

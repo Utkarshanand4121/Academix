@@ -6,7 +6,8 @@ import {
   logoutController,
   signupController,
 } from "../controllers/student.controller.js";
-import { verifyJWTStudent } from "./../middlewares/student.middlewares";
+import { verifyJWTStudent } from "./../middlewares/student.middlewares.js";
+import { upload } from "../middlewares/multer.middlewares.js";
 
 const router = Router();
 
@@ -34,6 +35,6 @@ router.route("/verification/:id").post(
   ]),
   addStudentDeatils
 );
-router.route("/student/:id").get(verifyJWTStudent, getStudent);
+router.route("/getStudent/:id").get(verifyJWTStudent, getStudent);
 
 export default router;

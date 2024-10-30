@@ -114,6 +114,79 @@ teacherSchema.methods.generateRefreshToekn = function () {
   );
 };
 
-const Teacher = mongoose.model("Teacher", teacherSchema);
+const teacherDetailsSchema = new mongoose.Schema(
+  {
+    Phone: {
+      type: Number,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+    Address: {
+      type: String,
+      required: true,
+    },
+    Experience: {
+      type: Number,
+      required: true,
+    },
+    SecondarySchool: {
+      type: String,
+      required: true,
+    },
+    HigherSchool: {
+      type: String,
+      required: true,
+    },
+    UGCollege: {
+      type: String,
+      required: true,
+    },
+    PGCollege: {
+      type: String,
+      required: true,
+    },
+    SecondaryMarks: {
+      type: Number,
+      required: true,
+    },
+    HigherMarks: {
+      type: Number,
+      required: true,
+    },
+    UGMarks: {
+      type: Number,
+      required: true,
+    },
+    PGMarks: {
+      type: Number,
+      required: true,
+    },
+    Aadhaar: {
+      type: String,
+      required: true,
+    },
+    Secondary: {
+      type: String,
+      required: true,
+    },
+    Higher: {
+      type: String,
+      required: true,
+    },
+    UG: {
+      type: String,
+      required: true,
+    },
+    PG: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-export { Teacher };
+const Teacher = mongoose.model("Teacher", teacherSchema);
+const Teacherdocs = mongoose.model("Teacherdocs", teacherDetailsSchema);
+
+export { Teacher, Teacherdocs };

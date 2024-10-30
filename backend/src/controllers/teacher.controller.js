@@ -1,8 +1,9 @@
 import { Student } from "../models/student.models.js";
-import { Teacher } from "../models/teacher.models.js";
+import { Teacher, Teacherdocs } from "../models/teacher.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const generateAccessAndRefreshToken = async (teacherId) => {
   try {
@@ -152,4 +153,129 @@ const getTeacher = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, user, "Teacher logged in"));
 });
 
-export { signupController, loginController, logoutController, getTeacher };
+const addTeacherDetails = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  if (req.teacher._id != id) {
+    throw new ApiError(400, "Unauthorized User");
+  }
+
+  const {
+    Phone,
+    Address,
+    Experience,
+    SecondarySchool,
+    HigherSchool,
+    UGCollege,
+    PGCollege,
+    SecondaryMarks,
+    HigherMarks,
+    UGMarks,
+    PGMarks,
+  } = req.body;
+
+  if (
+    [
+      Phone,
+      Address,
+      Experience,
+      SecondarySchool,
+      HigherSchool,
+      UGCollege,
+      PGCollege,
+      SecondaryMarks,
+      HigherMarks,
+      UGMarks,
+      PGMarks,
+    ].some((fields) => fields?.trim() === "")
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  const existing = await Teacherdocs.findOne({ Phone });
+  if (existing) {
+    throw new ApiError(400, "Phone number all ready exists");
+  }
+
+  const aadhaarLocalPath = req.files?.Aadhaar?.[0]?.path;
+  const secondaryLocalPath = req.files?.Secondary?.[0]?.path;
+  const higherLocalPath = req.files?.Higher?.[0]?.path;
+  const ugLocalPath = req.files?.UG?.[0]?.path;
+  const pgLocalPath = req.files?.PG?.[0]?.path;
+
+  if (!aadhaarLocalPath) {
+    throw new ApiError(400, "Aadhaar is required");
+  }
+  if (!secondaryLocalPath) {
+    throw new ApiError(400, "Secondary is required");
+  }
+  if (!higherLocalPath) {
+    throw new ApiError(400, "Higher marks sheet is required");
+  }
+  if (!ugLocalPath) {
+    throw new ApiError(400, "UG Marks sheet is required");
+  }
+  if (!pgLocalPath) {
+    throw new ApiError(400, "PG Marks sheet is required");
+  }
+
+  const Aadhaar = await uploadOnCloudinary(aadhaarLocalPath);
+  const Secondary = await uploadOnCloudinary(secondaryLocalPath);
+  const Higher = await uploadOnCloudinary(higherLocalPath);
+  const UG = await uploadOnCloudinary(ugLocalPath);
+  const PG = await uploadOnCloudinary(pgLocalPath);
+
+  const teacherDetails = await Teacherdocs.create({
+    Phone,
+    Address,
+    Experience,
+    SecondarySchool,
+    HigherSchool,
+    UGCollege,
+    PGCollege,
+    SecondaryMarks,
+    HigherMarks,
+    UGMarks,
+    PGMarks,
+    Aadhaar: Aadhaar.url,
+    Secondary: Secondary.url,
+    Higher: Higher.url,
+    UG: UG.url,
+    PG: PG.url,
+  });
+
+  // In Teacher models
+  const addTeacherInfo = await Teacher.findOneAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        isApproved: "pending",
+        teacherDetails: teacherDetails._id,
+      },
+    },
+    {
+      new: true,
+    }
+  ).select("-password -refreshToken");
+
+  if (!addTeacherDetails) {
+    throw new ApiError(400, "failedto approve or reject || Teacher not found");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        addTeacherInfo,
+        "Teacher document added successfully"
+      )
+    );
+});
+
+export {
+  signupController,
+  loginController,
+  logoutController,
+  getTeacher,
+  addTeacherDetails,
+};
