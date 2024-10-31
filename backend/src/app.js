@@ -22,4 +22,7 @@ app.use("/api/v1/student", studentRoute);
 import teacherRoute from "./routes/teacher.routes.js";
 app.use("/api/v1/teacher", teacherRoute);
 
+import adminRoute from "./routes/admin.routes.js";
+app.use("/api/v1/admin", adminRoute);
+
 export { app };
