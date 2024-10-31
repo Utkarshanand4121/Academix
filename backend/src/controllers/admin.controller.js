@@ -1,4 +1,6 @@
 import { Admin } from "../models/admin.models.js";
+import { Student } from "../models/student.models.js";
+import { Teacher } from "../models/teacher.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -118,4 +120,149 @@ const logoutController = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Admin logout"));
 });
 
-export { signupController, loginController, logoutController };
+const forApproval = asyncHandler(async (req, res) => {
+  const adminId = req.params.adminId;
+
+  if (!adminId) {
+    throw new ApiError(400, "Invalid authorization");
+  }
+
+  const loggedAdmin = await Admin.findById(adminId);
+  if (!loggedAdmin) {
+    throw new ApiError(400, "Admin not logged in");
+  }
+
+  const studentApproval = await Student.find({
+    isVerified: true,
+  });
+
+  const teacherApproval = await Teacher.find({
+    isVerified: true,
+  });
+
+  if (!(studentApproval && teacherApproval)) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, loggedAdmin, "No pending teacher or student"));
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { admin: loggedAdmin, studentApproval, teacherApproval },
+        "fetched Successfully"
+      )
+    );
+});
+
+const approveStudent = asyncHandler(async (req, res) => {
+  const adminId = req.params.adminId;
+  if (!adminId) {
+    throw new ApiError(400, "Admin is not register");
+  }
+
+  const loggedAdmin = await Admin.findById(adminId);
+  if (!loggedAdmin) {
+    throw new ApiError(400, "logged Unsuccessfully");
+  }
+
+  const studentId = req.params.studentId;
+  if (!studentId) {
+    throw new ApiError(400, "Student is not register");
+  }
+
+  const toApprove = req.body.isApproved;
+  const remarks = req.body.remarks || null;
+
+  if (
+    !toApprove ||
+    (toApprove != "pending" &&
+      toApprove != "rejected" &&
+      toApprove != "reupload")
+  ) {
+    throw new ApiError(400, "Please choose anything");
+  }
+
+  const studentApprove = await Student.findOneAndUpdate(
+    { _id: studentId },
+    {
+      $set: {
+        isApproved: toApprove,
+        remarks: remarks,
+      },
+    },
+    { new: true }
+  );
+
+  if (!studentApprove) {
+    throw new ApiError(400, "Failed to approve");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, studentApprove, "Student approved successfully")
+    );
+});
+
+const approveTeacher = asyncHandler(async (req, res) => {
+  const adminId = req.params.adminId;
+  if (!adminId) {
+    throw new ApiError(400, "admin is not authorized");
+  }
+
+  const loggedAdmin = await Admin.findById({ adminId });
+  if (!loggedAdmin) {
+    throw new ApiError(400, "Not logged in admin");
+  }
+
+  const teacherId = req.params.teacherIdl;
+  if (!teacherId) {
+    throw new ApiError(400, "Teacher id is not authorized");
+  }
+
+  const toApprove = await Teacher.body.isApproved;
+  const remarks = await Teacher.body.remarks;
+
+  if (
+    !toApprove ||
+    (toApprove != "approved" &&
+      toApprove != "rejected" &&
+      toApprove != "reupload")
+  ) {
+    throw new ApiError(400, "Please choose anything");
+  }
+
+  const teacherApproved = await Teacher.findOneAndUpdate(
+    { _id: teacherId },
+    {
+      $set: {
+        isApproved: toApprove,
+        remarks: remarks,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!teacherApproved) {
+    throw new ApiError(400, "Failed to approve");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, teacherApproved, "Teacher approved"));
+});
+
+
+export {
+  signupController,
+  loginController,
+  logoutController,
+  forApproval,
+  approveStudent,
+  approveTeacher,
+};
