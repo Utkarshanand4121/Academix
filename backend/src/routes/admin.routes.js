@@ -8,8 +8,8 @@ import {
   logoutController,
   signupController,
   toApprove,
-} from "../controllers/admin.controller";
-import { verifyJWTAdmin } from "./../middlewares/admin.middlewares";
+} from "../controllers/admin.controller.js";
+import { verifyJWTAdmin } from "./../middlewares/admin.middlewares.js";
 
 const router = Router();
 
