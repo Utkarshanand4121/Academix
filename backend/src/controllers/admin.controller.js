@@ -1,4 +1,5 @@
 import { Admin } from "../models/admin.models.js";
+import { Course } from "../models/course.models.js";
 import { Student } from "../models/student.models.js";
 import { Teacher } from "../models/teacher.models.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -257,6 +258,78 @@ const approveTeacher = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, teacherApproved, "Teacher approved"));
 });
 
+const toApprove = asyncHandler(async (req, res) => {
+  const adminId = req.params.adminId;
+
+  if (!adminId) {
+    throw new ApiError(400, "Not authorized");
+  }
+
+  const loggedAdmin = await Admin.findById(adminId);
+
+  if (!loggedAdmin) {
+    throw new ApiError(400, "Admin not found");
+  }
+
+  const approveCourses = await Course.find({ isApproved: false }).populate(
+    "enrolledTeacher"
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        approveCourses,
+        "Data fetched for approal of courses by admin"
+      )
+    );
+});
+
+const approveCourses = asyncHandler(async (req, res) => {
+  const adminId = req.params.adminId;
+  if (!adminId) {
+    throw new ApiError(400, "Fetched unsuucessfully");
+  }
+
+  const loggedAdmin = await Admin.findById(adminId);
+  if (!loggedAdmin) {
+    throw new ApiError(400, "Admin not fetched");
+  }
+
+  const courseId = req.params.courseId;
+  if (!courseId) {
+    throw new ApiError(400, "Course id is required");
+  }
+
+  const toApprove = req.body.isApproved;
+  if (toApprove) {
+    const theCourse = await Course.findByIdAndUpdate(
+      { _id: courseId },
+      { $set: { isApproved: toApprove } },
+      { new: true }
+    );
+
+    if (!theCourse) {
+      throw new ApiError(400, "Failed to approve or reject the course");
+    }
+
+    return res.status(200).json(200, theCourse, "Course approved successfully");
+  } else {
+    const theCourse = await Course.findByIdAndDelete(
+      { _id: courseId },
+      { new: true }
+    );
+
+    if (!theCourse) {
+      throw new ApiError(400, "Failed to reject");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Course reject successfully"));
+  }
+});
 
 export {
   signupController,
@@ -265,4 +338,6 @@ export {
   forApproval,
   approveStudent,
   approveTeacher,
+  toApprove,
+  approveCourses,
 };
