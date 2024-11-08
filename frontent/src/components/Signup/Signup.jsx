@@ -1,5 +1,4 @@
-import React from "react";
-import Mail from "/src/assets/Meet-the-team.svg";
+import React, { useState } from "react";
 import {
   chakra,
   Box,
@@ -10,24 +9,26 @@ import {
   VisuallyHidden,
   Input,
   GridItem,
-  Textarea,
 } from "@chakra-ui/react";
 import Header from "../Home/Header/Header";
+import RadioBtn from "../RadioBtn/RadioBtn";
+import Images from "/src/assets/Grammar-correction.svg";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const [userType, setUserType] = useState('');
+  const navigate = useNavigate();
   return (
     <div>
-      <Header/>
+      <Header />
       <div className="bg-slate-600">
         <div class="w-full h-auto flex flex-wrap flex-col items-center">
-          <p class="text-white font-sans text-3xl md:text-4xl text-center mt-4">
-            Contact Us
-          </p>
-          <div class="w-36 h-1 border-b-4 border-yellow-400 mt-2 rounded-2xl md:mt-4 mb-12"></div>
+          <p class="text-white font-sans text-3xl md:text-4xl text-center mt-4 h-11"></p>
+          <div class="w-36 h-1 mt-2 rounded-2xl md:mt-4 mb-12"></div>
         </div>
         <div className="flex gap-10 mt-10 h-[71vh]">
           <div className="p-[15px] w-1/2 pl-10 mb-14 -mt-12">
-            <img src={Mail} width={700} alt="" />
+            <img src={Images} width={700} alt="" />
           </div>
           <div>
             <GridItem
@@ -36,6 +37,7 @@ const Signup = () => {
                 md: 4,
               }}
               pl={16}
+              
             >
               <Box
                 as="form"
@@ -52,7 +54,7 @@ const Signup = () => {
                     color: "gray.600",
                   }}
                 >
-                  <chakra.p fontSize={"2xl"}>Start talking now</chakra.p>
+                  <chakra.p fontSize={"2xl"}>SignUp</chakra.p>
                 </Center>
                 <SimpleGrid
                   columns={1}
@@ -66,11 +68,11 @@ const Signup = () => {
                   }}
                 >
                   <Flex>
-                    <VisuallyHidden>First Name</VisuallyHidden>
+                    <VisuallyHidden>Username</VisuallyHidden>
                     <Input
                       mt={0}
                       type="text"
-                      placeholder="First Name"
+                      placeholder="Username"
                       fontSize="lg"
                       p={6}
                       align="start" // Aligns text to the start
@@ -102,16 +104,15 @@ const Signup = () => {
                   </Flex>
                   <Flex mt={4}>
                     {" "}
-                    {/* Adds space between Email Address and Message */}
-                    <VisuallyHidden>Message</VisuallyHidden>
-                    <Textarea
+                    {/* Adds space between First Name and Email Address */}
+                    <VisuallyHidden>Password</VisuallyHidden>
+                    <Input
                       mt={0}
-                      placeholder="Message"
+                      type="password"
+                      placeholder="Password"
                       fontSize="lg"
-                      p={6} // Adjust padding for the Textarea
+                      p={6}
                       align="start" // Aligns text to the start
-                      height="120px" // Adds height to make it larger
-                      resize="none" // Prevents resizing if needed
                       border="1px solid" // Add border
                       borderColor="white" // Set border color for light mode
                       _dark={{
@@ -119,6 +120,13 @@ const Signup = () => {
                       }}
                     />
                   </Flex>
+                  <div className="m-5 ml-10 ">
+                    <RadioBtn userType={userType} setUserType={setUserType} />
+                  </div>
+                  <div className="signupage">
+                      <span>Already have an account? </span>
+                      <button onClick={() => navigate('/login')} className="text-green-400">Login</button>
+                  </div>
                   <Button
                     colorScheme="normal"
                     w="full"
@@ -128,7 +136,7 @@ const Signup = () => {
                     bg="blue.600"
                     mt={4}
                   >
-                    Send A Message
+                    SignUp
                   </Button>
                 </SimpleGrid>
               </Box>
