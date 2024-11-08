@@ -2,6 +2,7 @@ import React from "react";
 import Plant2 from "/src/assets/Plant2.svg";
 import Plant from "/src/assets/Plant.svg";
 import Header from "../Header/Header";
+import Footer from "../../Footer/Footer";
 
 const About = () => {
   return (
@@ -50,6 +51,7 @@ const About = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

@@ -6,7 +6,7 @@ import About from './components/Home/About/About';
 import Contact from './components/Home/Contact/Contact';
 import Courses from './components/Home/Courses/Courses';
 import Landing from './components/Home/Landing/Landing';
-import Footer from './components/Footer/Footer';
+import Footer from './components/Footer/Footer';  
 
 function App() {
 
@@ -20,6 +20,7 @@ function App() {
         <Route path='/contact' element={<Contact/>}/>
         <Route path='/courses' element={<Courses/>}/>
         <Route path='/footer' element={<Footer/>}/>
+        <Route path='/login' element={<Login/>}/>
       </Routes>
     </BrowserRouter>
   )

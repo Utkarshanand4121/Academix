@@ -1,0 +1,57 @@
+/* === Footer === */
+.footer {
+  height: 230px;
+  background-color: #042439;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15rem;
+}
+
+.footer .leftPart {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #fff;
+}
+
+.footer .leftPart .title {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  gap: 1rem;
+}
+
+.rightPart .links {
+  width: 25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  color: #fff;
+}
+
+.rightPart .links .link {
+  display: flex;
+  gap: 0.7rem;
+  width: 7rem;
+}
+
+.rightPart .links .link :hover {
+  color: #9433e0;
+}
+
+.hr {
+  margin: 2rem 0;
+}
+
+.icons {
+  margin-left: 15rem;
+  display: flex;
+  gap: 1rem;
+}
+.rightPart {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* This will align children to the right */
+}
