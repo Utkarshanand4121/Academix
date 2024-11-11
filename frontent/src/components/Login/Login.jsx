@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import Header from "../Home/Header/Header";
 import RadioBtn from "../RadioBtn/RadioBtn";
-import Images from "/src/assets/Grammar-correction.svg";
 import { useNavigate } from "react-router-dom";
 import HR from "/src/assets/HR.svg";
 

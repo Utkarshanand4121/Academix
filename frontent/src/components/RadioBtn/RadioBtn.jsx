@@ -1,5 +1,5 @@
 import React from "react";
-import '../RadioBtn/RadioBtn.css'
+import "../RadioBtn/RadioBtn.css";
 
 function RadioBtn({ userType, setUserType }) {
   return (

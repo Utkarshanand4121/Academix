@@ -14,10 +14,82 @@ import Header from "../Home/Header/Header";
 import RadioBtn from "../RadioBtn/RadioBtn";
 import Images from "/src/assets/Grammar-correction.svg";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Signup = () => {
-  const [userType, setUserType] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+  const [userType, setUserType] = useState("");
   const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newErrors = {};
+
+    if (!username.trim()) {
+      newErrors.Username = "Username is required";
+      toast("Username is required");
+    }
+
+    if (!email.trim()) {
+      newErrors.Email = "Email is required";
+      toast("Email is required");
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.Email = "Invalid email format";
+      toast("Invalid email format");
+    }
+
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      newErrors.Password = "Invalid password";
+      toast("Invalid Password");
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // sending data to the backend
+    const data = {
+      username: username,
+      password: password,
+      email: email,
+    };
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/${userType}/signup `, {
+        method: "POST",
+        // mode: "cors",
+        // credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        toast("Signup Successfull");
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      } else if(response.status === 400) {
+        setErrors(responseData.errors || {});
+      } else {
+        toast("Signup error");
+        console.error("Signup failed with status code: ", response.status);
+      }
+    } catch (error) {
+      setErrors(error.message);
+    }
+  };
   return (
     <div>
       <Header />
@@ -37,7 +109,6 @@ const Signup = () => {
                 md: 4,
               }}
               pl={16}
-              
             >
               <Box
                 as="form"
@@ -46,6 +117,7 @@ const Signup = () => {
                 shadow="xl"
                 p={16}
                 bg={"#042439"}
+                onSubmit={handleSubmit}
               >
                 <Center
                   pb={0}
@@ -82,6 +154,8 @@ const Signup = () => {
                       _dark={{
                         borderColor: "gray.700", // Set border color for dark mode
                       }}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                     />
                   </Flex>
                   <Flex mt={4}>
@@ -100,6 +174,8 @@ const Signup = () => {
                       _dark={{
                         borderColor: "gray.700", // Set border color for dark mode
                       }}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </Flex>
                   <Flex mt={4}>
@@ -118,14 +194,21 @@ const Signup = () => {
                       _dark={{
                         borderColor: "gray.700", // Set border color for dark mode
                       }}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                   </Flex>
                   <div className="m-5 ml-10 ">
                     <RadioBtn userType={userType} setUserType={setUserType} />
                   </div>
                   <div className="signupage">
-                      <span>Already have an account? </span>
-                      <button onClick={() => navigate('/login')} className="text-green-400">Login</button>
+                    <span>Already have an account? </span>
+                    <button
+                      onClick={() => navigate("/login")}
+                      className="text-green-400"
+                    >
+                      Login
+                    </button>
                   </div>
                   <Button
                     colorScheme="normal"
@@ -144,6 +227,7 @@ const Signup = () => {
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </div>
   );
 };
