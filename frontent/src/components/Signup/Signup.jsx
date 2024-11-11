@@ -14,8 +14,8 @@ import Header from "../Home/Header/Header";
 import RadioBtn from "../RadioBtn/RadioBtn";
 import Images from "/src/assets/Grammar-correction.svg";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -63,24 +63,27 @@ const Signup = () => {
     };
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/${userType}/signup `, {
-        method: "POST",
-        // mode: "cors",
-        // credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `http://localhost:8000/api/v1/${userType}/signup `,
+        {
+          method: "POST",
+          // mode: "cors",
+          // credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
       const responseData = await response.json();
 
       if (response.ok) {
         toast("Signup Successfull");
         setTimeout(() => {
-          navigate('/login');
+          navigate("/login");
         }, 3000);
-      } else if(response.status === 400) {
+      } else if (response.status === 400) {
         setErrors(responseData.errors || {});
       } else {
         toast("Signup error");
@@ -227,7 +230,7 @@ const Signup = () => {
           </div>
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 };
